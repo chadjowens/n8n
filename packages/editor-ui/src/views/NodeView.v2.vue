@@ -364,9 +364,7 @@ async function initializeRoute(force = false) {
 			await initializeWorkspaceForExistingWorkflow(workflowId.value);
 
 			void nextTick(() => {
-				nodeHelpers.updateNodesInputIssues();
-				nodeHelpers.updateNodesCredentialsIssues();
-				nodeHelpers.updateNodesParameterIssues();
+				updateNodesIssues();
 			});
 		}
 
@@ -396,9 +394,7 @@ async function initializeWorkspaceForExistingWorkflow(id: string) {
 			trackOpenWorkflowFromOnboardingTemplate();
 		}
 
-		await projectsStore.setProjectNavActiveIdByWorkflowHomeProject(
-			editableWorkflow.value.homeProject,
-		);
+		await projectsStore.setProjectNavActiveIdByWorkflowHomeProject(workflowData.homeProject);
 	} catch (error) {
 		toast.showError(error, i18n.baseText('openWorkflow.workflowNotFoundError'));
 
@@ -409,6 +405,12 @@ async function initializeWorkspaceForExistingWorkflow(id: string) {
 		uiStore.nodeViewInitialized = true;
 		initializedWorkflowId.value = workflowId.value;
 	}
+}
+
+function updateNodesIssues() {
+	nodeHelpers.updateNodesInputIssues();
+	nodeHelpers.updateNodesCredentialsIssues();
+	nodeHelpers.updateNodesParameterIssues();
 }
 
 /**
@@ -1156,6 +1158,10 @@ async function onOpenExecution(executionId: string) {
 	if (!data) {
 		return;
 	}
+
+	void nextTick(() => {
+		updateNodesIssues();
+	});
 
 	canvasStore.stopLoading();
 	fitView();

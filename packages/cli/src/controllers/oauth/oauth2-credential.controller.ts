@@ -23,7 +23,7 @@ export class OAuth2CredentialController extends AbstractOAuthController {
 	async getAuthUri(req: OAuthRequest.OAuth2Credential.Auth): Promise<string> {
 		const credential = await this.getCredential(req);
 		const additionalData = await this.getAdditionalData();
-		const decryptedDataOriginal = await this.getDecryptedData(credential, additionalData);
+		const decryptedDataOriginal = await this.getDecryptedDataForAuthUri(credential, additionalData);
 
 		// At some point in the past we saved hidden scopes to credentials (but shouldn't)
 		// Delete scope before applying defaults to make sure new scopes are present on reconnect
@@ -149,7 +149,7 @@ export class OAuth2CredentialController extends AbstractOAuthController {
 				credentialId: credential.id,
 			});
 
-			return res.render('oauth-callback', { imagePath: 'n8n-logo.png' });
+			return res.render('oauth-callback');
 		} catch (error) {
 			return this.renderCallbackError(
 				res,
